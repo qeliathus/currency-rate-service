@@ -1,0 +1,78 @@
+openapi: 3.0.1
+info:
+  title: Currency Rate API
+  description: API for managing currency rates
+  version: 1.0.0
+paths:
+  /api/rates/fetch:
+    get:
+      summary: Fetch and save currency rates for a specific date
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+            pattern: '\\d{4}-\\d{2}-\\d{2}'
+          description: "Date in format yyyy-MM-dd (parameter is @NotEmpty)"
+      responses:
+        '200':
+          description: Data fetched and saved successfully
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid date format or missing date parameter
+        '500':
+          description: Server error while fetching or saving data
+  /api/rates:
+    get:
+      summary: Get currency rate for a specific date and currency code
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+            pattern: '\\d{4}-\\d{2}-\\d{2}'
+          description: "Date in format yyyy-MM-dd (parameter is @NotEmpty)"
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+          description: "Currency code (parameter is @NotEmpty)"
+      responses:
+        '200':
+          description: Currency rate information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateDto'
+        '400':
+          description: Invalid date or code parameter
+        '404':
+          description: Currency rate not found for the given date and code
+        '500':
+          description: Server error while retrieving data
+components:
+  schemas:
+    CurrencyRateDto:
+      type: object
+      properties:
+        Cur_ID:
+          type: integer
+          format: int64
+        Cur_Abbreviation:
+          type: string
+        Cur_Name:
+          type: string
+        Cur_OfficialRate:
+          type: number
+          format: double
+        Date:
+          type: string
+          format: date
