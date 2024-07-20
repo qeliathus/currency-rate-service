@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing currency rates.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +25,11 @@ public class CurrencyRateService {
     private final RestTemplate restTemplate;
     private final CurrencyRateRepository currencyRateRepository;
 
+    /**
+     * Fetches currency rates from the NBRB API and saves them to the database.
+     *
+     * @param date the date for which to fetch the currency rates in the format yyyy-MM-dd
+     */
     public void fetchAndSaveRates(String date) {
         try {
             ResponseEntity<CurrencyRateDto[]> response = restTemplate.getForEntity(NBRB_API_URL, CurrencyRateDto[].class, date);
@@ -39,6 +47,13 @@ public class CurrencyRateService {
         }
     }
 
+    /**
+     * Gets the currency rate for the specified date and currency code from the database.
+     *
+     * @param date the date for which to get the currency rate in the format yyyy-MM-dd
+     * @param code the currency code
+     * @return an optional containing the currency rate DTO if found, otherwise empty
+     */
     public Optional<CurrencyRateDto> getRateByDateAndCode(String date, String code) {
         return Optional.ofNullable(currencyRateRepository.findByDateAndCode(date, code))
                 .map(rate -> new CurrencyRateDto(rate.getId(), rate.getCode(), rate.getCurrency(), rate.getRate(), rate.getDate()));
